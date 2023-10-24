@@ -1,13 +1,15 @@
-import { useContext, useEffect } from "react";
+import { useContext, useEffect, useState } from "react";
 import { Link, useNavigate } from "react-router-dom";
 import { AuthContext } from "../context/AuthContext";
 
 export default function Login() {
   const { authenticated, setAuthenticated } = useContext(AuthContext);
-
+  const [run, setRun] = useState(false);
   const navigate = useNavigate();
 
   const handleLogin = () => {
+    if (!run) return;
+
     fetch("https://localhost:7267/api/auth/login", {
       method: "POST",
       headers: {
@@ -19,9 +21,9 @@ export default function Login() {
         password: "12345",
       }),
     })
-      .then((res) => res.text())
+      .then((res) => res.json())
       .then((r) => {
-        if (r.includes("successfull")) {
+        if (r.authenticated) {
           fetch("https://localhost:7267/api/auth/session", {
             headers: {
               "Content-Type": "application/json",
@@ -35,16 +37,24 @@ export default function Login() {
   };
 
   useEffect(() => {
-    handleLogin();
-  }, []);
-
-  useEffect(() => {
     if (authenticated == true) navigate("/private");
-  }, [setAuthenticated, navigate]);
+
+    handleLogin();
+  }, [authenticated, setAuthenticated, run]);
+
   return (
     <>
-      <button onClick={handleLogin}>Login</button>
-      <Link to={"/private"}>Go</Link>
+      {!authenticated ? (
+        <div className="flex">
+          <button className="w-10 bg-green-700" onClick={() => setRun(true)}>
+            Login
+          </button>
+        </div>
+      ) : (
+        // fallback
+        <div className="">You are loged in!</div>
+      )}
+      <Link to={"/private"}>Private route</Link>
     </>
   );
 }

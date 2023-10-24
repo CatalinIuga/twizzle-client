@@ -1,35 +1,28 @@
-import { useEffect, useState } from "react";
+import { useContext, useEffect, useState } from "react";
 import { Outlet, useNavigate } from "react-router-dom";
+import { AuthContext } from "../context/AuthContext";
 
 const Layout = () => {
+  const { session, authenticated, setAuthenticated } = useContext(AuthContext);
   const navigate = useNavigate();
   const [loading, setLoading] = useState(true);
-  const [session, setSession] = useState({});
 
   useEffect(() => {
     const checkSessionStatus = async () => {
-      try {
-        const response = await fetch(
-          "https://localhost:7267/api/auth/session",
-          {
-            headers: {
-              "Content-Type": "application/json",
-            },
-            credentials: "include",
-          }
-        );
-        if (response.ok) {
-          setLoading(false);
-          const ses = await response.json();
-          setSession(ses);
-        } else {
-          navigate("/login");
-        }
-        setLoading(false);
-      } catch (error) {
-        console.error("Error:", error);
-        navigate("/login");
-      }
+      fetch("https://localhost:7267/api/auth/session", {
+        headers: {
+          "Content-Type": "application/json",
+        },
+        credentials: "include",
+      })
+        .then((res) => res.json())
+        .then((r) => setAuthenticated(r.authenticated, r.session))
+        .catch((e) => {
+          console.error(e);
+          setAuthenticated(false, null);
+        });
+
+      setLoading(false);
     };
 
     checkSessionStatus();
@@ -40,9 +33,11 @@ const Layout = () => {
   }
 
   return (
-    <div className="">
+    <div className="flex flex-col">
       <Outlet />
-      {session && JSON.stringify(session)}
+      <div className="text-text font-bold text-3xl">
+        Session: {authenticated && JSON.stringify(session)}
+      </div>
     </div>
   );
 };
