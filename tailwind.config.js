@@ -3,6 +3,10 @@ export default {
   content: ["./index.html", "./src/**/*.{js,ts,jsx,tsx}"],
   theme: {
     extend: {
+      fontFamily: {
+        cubano: "Cubano",
+        jet: "JetBrains Mono",
+      },
       colors: {
         text: "#f4f4f5",
         background: "#18181b",

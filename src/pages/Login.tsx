@@ -1,5 +1,5 @@
 import { useContext, useEffect, useState } from "react";
-import { Link, useNavigate } from "react-router-dom";
+import { useNavigate } from "react-router-dom";
 import { AuthContext } from "../context/AuthContext";
 
 export default function Login() {
@@ -31,13 +31,13 @@ export default function Login() {
             credentials: "include",
           })
             .then((res) => res.json())
-            .then((r) => setAuthenticated(true, r));
+            .then((r) => setAuthenticated(r.authenticated, r.session));
         }
       });
   };
 
   useEffect(() => {
-    if (authenticated == true) navigate("/private");
+    if (authenticated == true) navigate("/profile");
 
     handleLogin();
   }, [authenticated, setAuthenticated, run]);
@@ -54,7 +54,6 @@ export default function Login() {
         // fallback
         <div className="">You are loged in!</div>
       )}
-      <Link to={"/private"}>Private route</Link>
     </>
   );
 }

@@ -1,7 +1,10 @@
+@import url("https://fonts.cdnfonts.com/css/cubano");
+@import url("https://fonts.cdnfonts.com/css/jetbrains-mono-2");
 @tailwind base;
 @tailwind components;
 @tailwind utilities;
 
 *:root {
   @apply bg-background text-text;
+  font-family: "JetBrains Mono", sans-serif;
 }

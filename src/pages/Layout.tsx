@@ -1,5 +1,6 @@
 import { useContext, useEffect, useState } from "react";
 import { Outlet, useNavigate } from "react-router-dom";
+import Navbar from "../components/Navbar";
 import { AuthContext } from "../context/AuthContext";
 
 const Layout = () => {
@@ -7,24 +8,24 @@ const Layout = () => {
   const navigate = useNavigate();
   const [loading, setLoading] = useState(true);
 
+  const checkSessionStatus = async () => {
+    fetch("https://localhost:7267/api/auth/session", {
+      headers: {
+        "Content-Type": "application/json",
+      },
+      credentials: "include",
+    })
+      .then((res) => res.json())
+      .then((r) => setAuthenticated(r.authenticated, r.session))
+      .catch((e) => {
+        console.error(e);
+        setAuthenticated(false, null);
+      });
+
+    setLoading(false);
+  };
+
   useEffect(() => {
-    const checkSessionStatus = async () => {
-      fetch("https://localhost:7267/api/auth/session", {
-        headers: {
-          "Content-Type": "application/json",
-        },
-        credentials: "include",
-      })
-        .then((res) => res.json())
-        .then((r) => setAuthenticated(r.authenticated, r.session))
-        .catch((e) => {
-          console.error(e);
-          setAuthenticated(false, null);
-        });
-
-      setLoading(false);
-    };
-
     checkSessionStatus();
   }, [navigate]);
 
@@ -33,9 +34,10 @@ const Layout = () => {
   }
 
   return (
-    <div className="flex flex-col">
+    <div className="container px-10 min-h-screen">
+      <Navbar />
       <Outlet />
-      <div className="text-text font-bold text-3xl">
+      <div className="absolute bottom-0 left-0 text-text font-bold text-3xl">
         Session: {authenticated && JSON.stringify(session)}
       </div>
     </div>
